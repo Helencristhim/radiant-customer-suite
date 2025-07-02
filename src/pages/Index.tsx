@@ -79,7 +79,7 @@ const Index = () => {
               <Bell className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
+              <SettingsIcon className="h-5 w-5" />
             </Button>
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
