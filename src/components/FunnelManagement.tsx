@@ -4,13 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Plus, Settings, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BarChart3, Plus, Settings, Eye, Building, Users, MessageSquare } from "lucide-react";
 import B2BSalesFlow from "./funnels/B2BSalesFlow";
 import B2CSalesFlow from "./funnels/B2CSalesFlow";
 import CustomerCareSalesFlow from "./funnels/CustomerCareSalesFlow";
 
 const FunnelManagement = () => {
   const [activeFunnel, setActiveFunnel] = useState("b2c");
+  const [showIntegrationsModal, setShowIntegrationsModal] = useState(false);
+  const [selectedFunnel, setSelectedFunnel] = useState(null);
 
   const funnels = [
     {
@@ -35,6 +38,22 @@ const FunnelManagement = () => {
       color: "bg-purple-500"
     }
   ];
+
+  const integrationOptions = [
+    { id: "facebook-ads", name: "Facebook Lead Ads", icon: "📘", description: "Captura leads do Facebook e Instagram" },
+    { id: "google-ads", name: "Google Ads", icon: "🔍", description: "Captura leads do Google Ads" },
+    { id: "elementor", name: "Elementor", icon: "🏗️", description: "Formulários de landing pages" },
+    { id: "typeform", name: "Typeform", icon: "📝", description: "Formulários interativos" },
+    { id: "webhook", name: "Webhook", icon: "🔗", description: "Integração personalizada" },
+    { id: "rd-station", name: "RD Station", icon: "📊", description: "Plataforma de marketing digital" },
+    { id: "lead-lovers", name: "Lead Lovers", icon: "💕", description: "Landing pages e formulários" },
+    { id: "manychat", name: "ManyChat", icon: "💬", description: "Chatbot do Facebook" }
+  ];
+
+  const handleIntegrations = (funnel) => {
+    setSelectedFunnel(funnel);
+    setShowIntegrationsModal(true);
+  };
 
   return (
     <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
@@ -89,6 +108,17 @@ const FunnelManagement = () => {
                 <Button 
                   size="sm" 
                   variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleIntegrations(funnel);
+                  }}
+                >
+                  <Building className="h-3 w-3 mr-1" />
+                  Integrações
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline"
                 >
                   <Settings className="h-3 w-3" />
                 </Button>
@@ -104,6 +134,63 @@ const FunnelManagement = () => {
         {activeFunnel === "b2b" && <B2BSalesFlow />}
         {activeFunnel === "customer-care" && <CustomerCareSalesFlow />}
       </div>
+
+      {/* Integrations Modal */}
+      <Dialog open={showIntegrationsModal} onOpenChange={setShowIntegrationsModal}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>
+              Integrações - {selectedFunnel?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              Escolha as integrações que deseja conectar a este funil para capturar leads automaticamente.
+            </p>
+            
+            <Tabs defaultValue="available" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="available">Disponíveis</TabsTrigger>
+                <TabsTrigger value="connected">Conectadas</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="available" className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {integrationOptions.map((integration) => (
+                    <Card key={integration.id} className="hover:shadow-md transition-shadow">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{integration.icon}</span>
+                            <div>
+                              <CardTitle className="text-base">{integration.name}</CardTitle>
+                              <p className="text-sm text-gray-600">{integration.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                          Conectar
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="connected" className="mt-6">
+                <div className="text-center py-12">
+                  <Building className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma integração conectada</h3>
+                  <p className="text-gray-600">Conecte integrações para começar a capturar leads automaticamente.</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

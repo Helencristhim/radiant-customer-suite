@@ -22,8 +22,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import UserManagementModal from "./UserManagementModal";
 
 const UserManagement = () => {
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const users = [
     {
       id: 1,
@@ -97,6 +101,11 @@ const UserManagement = () => {
       timestamp: "Há 1 hora"
     }
   ];
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setShowUserModal(true);
+  };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -238,7 +247,11 @@ const UserManagement = () => {
                   </thead>
                   <tbody>
                     {users.map((user) => (
-                      <tr key={user.id} className="border-b hover:bg-gray-50">
+                      <tr 
+                        key={user.id} 
+                        className="border-b hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleUserClick(user)}
+                      >
                         <td className="p-4">
                           <div className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -275,7 +288,7 @@ const UserManagement = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleUserClick(user)}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
@@ -362,6 +375,13 @@ const UserManagement = () => {
           </Card>
         </div>
       </div>
+
+      {/* User Management Modal */}
+      <UserManagementModal 
+        isOpen={showUserModal}
+        onClose={() => setShowUserModal(false)}
+        user={selectedUser}
+      />
     </div>
   );
 };

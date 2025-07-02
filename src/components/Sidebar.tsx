@@ -11,7 +11,6 @@ import {
   Megaphone,
   UserCheck,
   GitBranch,
-  Layers,
   Building,
   Phone
 } from "lucide-react";
@@ -28,7 +27,6 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }: SidebarPr
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "leads", label: "Leads", icon: Users },
     { id: "funnels", label: "Funis", icon: GitBranch },
-    { id: "sales-flow", label: "Funil Original", icon: Layers },
     { id: "attendance", label: "Atendimento", icon: MessageSquare },
     { id: "campaigns", label: "Campanhas", icon: Megaphone },
     { id: "reports", label: "Relatórios", icon: BarChart3 },

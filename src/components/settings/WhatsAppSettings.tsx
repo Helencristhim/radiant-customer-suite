@@ -4,9 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageCircle, Plus, Settings, Users, Building } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { MessageCircle, Plus, Settings, Users, Building, Smartphone, QrCode } from "lucide-react";
 
 const WhatsAppSettings = () => {
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showDeviceModal, setShowDeviceModal] = useState(false);
+
   const [attendants] = useState([
     {
       id: 1,
@@ -82,6 +88,41 @@ const WhatsAppSettings = () => {
     }
   ]);
 
+  const [devices] = useState([
+    {
+      id: 1,
+      name: "Atendimento Alumni - kids/YL/EA",
+      number: "+55 (11) 94599-2361",
+      status: "connected",
+      sector: "Customer care - Alumni by Better",
+      attendants: 3
+    },
+    {
+      id: 2,
+      name: "B2B- Alumni by Better",
+      number: "+55 (11) 97845-1234",
+      status: "connected",
+      sector: "B2B - Alumni by Better",
+      attendants: 4
+    },
+    {
+      id: 3,
+      name: "Sales FAAP",
+      number: "+55 (11) 95632-7890",
+      status: "connected",
+      sector: "B2C - Comercial Alumni by Better",
+      attendants: 6
+    },
+    {
+      id: 4,
+      name: "Customer care - Alumni",
+      number: "+55 (11) 91234-5678",
+      status: "disconnected",
+      sector: "Customer care - Alumni by Better",
+      attendants: 0
+    }
+  ]);
+
   const sectors = [
     { id: 1, name: "B2B - Alumni by Better", accounts: 3, attendants: 6, color: "bg-red-500" },
     { id: 2, name: "B2C - Comercial Alumni by Better", accounts: 16, attendants: 8, color: "bg-blue-500" },
@@ -99,30 +140,101 @@ const WhatsAppSettings = () => {
               <MessageCircle className="h-6 w-6 text-green-600" />
             </div>
             <div>
-              <CardTitle>WhatsApp</CardTitle>
+              <CardTitle>WhatsApp Business</CardTitle>
               <p className="text-sm text-gray-600 mt-1">
                 Configurações de canais e atendimento
               </p>
             </div>
           </div>
+          <Button 
+            className="bg-green-600 hover:bg-green-700"
+            onClick={() => setShowDeviceModal(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Novo Dispositivo
+          </Button>
         </CardHeader>
       </Card>
 
       <Tabs defaultValue="devices" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="devices">Dispositivos</TabsTrigger>
-          <TabsTrigger value="users-permissions">Usuários e Permissões</TabsTrigger>
-          <TabsTrigger value="sectors">Setores</TabsTrigger>
+          <TabsTrigger value="devices">
+            <Smartphone className="h-4 w-4 mr-2" />
+            Dispositivos
+          </TabsTrigger>
+          <TabsTrigger value="users-permissions">
+            <Users className="h-4 w-4 mr-2" />
+            Usuários e Permissões
+          </TabsTrigger>
+          <TabsTrigger value="sectors">
+            <Building className="h-4 w-4 mr-2" />
+            Setores
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="devices" className="mt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {devices.map((device) => (
+              <Card key={device.id} className={`${device.status === 'connected' ? 'border-green-200 bg-green-50/30' : 'border-gray-200'}`}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-3 rounded-full ${device.status === 'connected' ? 'bg-green-100' : 'bg-gray-100'}`}>
+                        <MessageCircle className={`h-6 w-6 ${device.status === 'connected' ? 'text-green-600' : 'text-gray-400'}`} />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{device.name}</CardTitle>
+                        <p className="text-sm text-gray-600">{device.number}</p>
+                      </div>
+                    </div>
+                    <Badge className={device.status === 'connected' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                      {device.status === 'connected' ? 'Conectado' : 'Desconectado'}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Setor:</span>
+                      <span className="text-sm font-medium">{device.sector}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">Atendentes:</span>
+                      <Badge variant="secondary">{device.attendants}</Badge>
+                    </div>
+                    <div className="flex space-x-2 pt-2">
+                      {device.status === 'connected' ? (
+                        <>
+                          <Button variant="outline" size="sm" className="flex-1">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Configurar
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-red-600">
+                            Desconectar
+                          </Button>
+                        </>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          className="w-full bg-green-600 hover:bg-green-700"
+                          onClick={() => setShowQRModal(true)}
+                        >
+                          <QrCode className="h-4 w-4 mr-2" />
+                          Conectar
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="users-permissions" className="mt-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader>
               <CardTitle>Configurações de atendentes</CardTitle>
-              <Button className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar dispositivo
-              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -172,23 +284,6 @@ const WhatsAppSettings = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="users-permissions" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Usuários e Permissões</CardTitle>
-              <p className="text-sm text-gray-600">
-                Gerencie as permissões de acesso dos usuários
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">Configurações de usuários e permissões</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="sectors" className="mt-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -228,11 +323,6 @@ const WhatsAppSettings = () => {
                       <Button variant="ghost" size="sm">
                         <Settings className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600">
-                        <Button variant="ghost" size="sm">
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                      </Button>
                     </div>
                   </div>
                 ))}
@@ -241,6 +331,97 @@ const WhatsAppSettings = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* QR Code Modal */}
+      <Dialog open={showQRModal} onOpenChange={setShowQRModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <MessageCircle className="h-5 w-5 text-green-600" />
+              <span>Novo dispositivo de WhatsApp</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 text-center">
+            <div className="p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-gray-600 mb-4">
+                Abra o WhatsApp no seu celular e na aba de Configurações procure por Aparelhos conectados. E clique em Conectar um aparelho. Aponte a câmera do seu celular para o QR code abaixo.
+              </p>
+              
+              <div className="w-48 h-48 bg-white border-2 border-gray-200 rounded-lg mx-auto flex items-center justify-center">
+                <div className="text-center">
+                  <QrCode className="h-16 w-16 text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-500">QR Code</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" className="flex-1">
+                Alterar configurações de sincronização
+              </Button>
+            </div>
+            
+            <p className="text-sm text-blue-600 cursor-pointer hover:underline">
+              Use o WhatsApp no seu celular para escanear.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Device Modal */}
+      <Dialog open={showDeviceModal} onOpenChange={setShowDeviceModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Adicionar Dispositivo WhatsApp</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nome do Dispositivo
+              </label>
+              <Input placeholder="Ex: Atendimento Comercial" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Setor
+              </label>
+              <select className="w-full p-2 border border-gray-300 rounded-md">
+                <option value="">Selecione um setor</option>
+                {sectors.map(sector => (
+                  <option key={sector.id} value={sector.id}>{sector.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch />
+              <span className="text-sm text-gray-600">Dispositivo principal</span>
+            </div>
+
+            <div className="flex space-x-3">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setShowDeviceModal(false)}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                className="flex-1 bg-green-600 hover:bg-green-700"
+                onClick={() => {
+                  setShowDeviceModal(false);
+                  setShowQRModal(true);
+                }}
+              >
+                Conectar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
