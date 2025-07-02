@@ -12,6 +12,8 @@ import SalesFlow from "@/components/SalesFlow";
 import Campaigns from "@/components/Campaigns";
 import Reports from "@/components/Reports";
 import UserManagement from "@/components/UserManagement";
+import Settings from "@/components/Settings";
+import FunnelManagement from "@/components/FunnelManagement";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -29,12 +31,16 @@ const Index = () => {
         return <Integrations />;
       case "sales-flow":
         return <SalesFlow />;
+      case "funnels":
+        return <FunnelManagement />;
       case "campaigns":
         return <Campaigns />;
       case "reports":
         return <Reports />;
       case "users":
         return <UserManagement />;
+      case "settings":
+        return <Settings />;
       default:
         return <Dashboard />;
     }
