@@ -53,6 +53,8 @@ const Index = () => {
     switch (activeTab) {
       case "dashboard":
         return <Dashboard />;
+      case "negocios":
+        return <div className="p-4 text-center text-gray-500">Use a rota /negocios para acessar a nova interface de negócios</div>;
       case "leads":
         return <LeadsTable />;
       case "contacts":
@@ -79,7 +81,7 @@ const Index = () => {
   };
 
   const navItems = [
-    { label: "Negócios", id: "dashboard", icon: Briefcase },
+    { label: "Negócios", id: "negocios", icon: Briefcase },
     { label: "Contatos", id: "contacts", icon: User },
     { label: "Atendimento", id: "attendance", icon: MessageCircle },
     { label: "Campanhas", id: "campaigns", icon: Megaphone },
