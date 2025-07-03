@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,6 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import ClientPanel from "@/components/ClientPanel";
 
 const Index = () => {
   const [selectedOrigin, setSelectedOrigin] = useState("leads_b2c");
@@ -74,9 +74,6 @@ const Index = () => {
     status: false,
     mais: false
   });
-  
-  const [selectedClient, setSelectedClient] = useState<any>(null);
-  const [isClientPanelOpen, setIsClientPanelOpen] = useState(false);
 
   const origins = [
     { label: "Customer Care - Alumni by Better", id: "cc_alumni", color: "#FFBABA" },
@@ -220,27 +217,6 @@ const Index = () => {
     setIsNewOriginModalOpen(false);
     setNewOriginName("");
     setNewOriginGroup("");
-  };
-  
-  const handleDealClick = (deal: any) => {
-    const clientData = {
-      id: deal.id,
-      nome: deal.nome_cliente,
-      email: deal.email,
-      telefone: "+55 11 99999-9999",
-      instagram: "@" + deal.nome_cliente.toLowerCase().replace(" ", ""),
-      empresa: "Empresa " + deal.nome_cliente,
-      cargo: "Gerente",
-      origem: "LEADS B2C",
-      valor: deal.valor,
-      status: "Aberto",
-      etapa_atual: stages.find(s => s.deals.includes(deal))?.name || "Base",
-      avatar: deal.avatar,
-      tags: deal.tags
-    };
-    
-    setSelectedClient(clientData);
-    setIsClientPanelOpen(true);
   };
 
   const filteredDeals = stages.map(stage => ({
@@ -445,8 +421,7 @@ const Index = () => {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className="bg-white rounded-lg border border-gray-200 p-3 cursor-pointer hover:shadow-md transition-shadow"
-                                  onClick={() => handleDealClick(deal)}
+                                  className="bg-white rounded-lg border border-gray-200 p-3 cursor-move hover:shadow-md transition-shadow"
                                 >
                                   {/* Deal Header */}
                                   <div className="flex items-start justify-between mb-2">
@@ -701,13 +676,6 @@ const Index = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Client Panel */}
-      <ClientPanel
-        cliente={selectedClient}
-        isOpen={isClientPanelOpen}
-        onClose={() => setIsClientPanelOpen(false)}
-      />
     </div>
   );
 };
