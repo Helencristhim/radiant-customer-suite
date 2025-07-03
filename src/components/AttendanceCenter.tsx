@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AttendanceCenter = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -40,6 +46,8 @@ const AttendanceCenter = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [newNote, setNewNote] = useState("");
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [dealStatus, setDealStatus] = useState("Aberto");
+  const [dealStage, setDealStage] = useState("Leads B2C");
 
   const conversations = [
     {
@@ -150,6 +158,18 @@ const AttendanceCenter = () => {
   const handleApiCall = (action: string) => {
     console.log(`Executando ação: ${action}`);
   };
+
+  const statusOptions = ["Aberto", "Ganho", "Perdido"];
+  const stageOptions = [
+    "Base",
+    "1º Contato",
+    "Follow Up",
+    "No-show",
+    "M.O.",
+    "Retorno futuro",
+    "Link de Pagamento",
+    "Fechado"
+  ];
 
   return (
     <div className="h-[calc(100vh-8rem)] flex">
@@ -325,7 +345,7 @@ const AttendanceCenter = () => {
             {/* Deal Card */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Negócio Selecionado</CardTitle>
+                <CardTitle className="text-sm">{selectedConversation.name}</CardTitle>
                 <div className="flex flex-wrap gap-1">
                   {selectedConversation.tags.map((tag, index) => (
                     <Badge key={index} variant="secondary" className="text-xs">
@@ -343,8 +363,51 @@ const AttendanceCenter = () => {
                   <p className="text-gray-600">Valor</p>
                   <p className="font-medium">R$ 0,00</p>
                 </div>
+                
+                {/* Status Selector */}
+                <div className="text-sm">
+                  <p className="text-gray-600 mb-1">Status</p>
+                  <Select value={dealStatus} onValueChange={setDealStatus}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border shadow-md">
+                      {statusOptions.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Stage Selector */}
+                <div className="text-sm">
+                  <p className="text-gray-600 mb-1">Etapa</p>
+                  <Select value={dealStage} onValueChange={setDealStage}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border shadow-md z-50">
+                      {stageOptions.map((stage) => (
+                        <SelectItem key={stage} value={stage}>
+                          {stage}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="flex space-x-2">
-                  <Badge className="bg-green-100 text-green-800 text-xs">Aberto</Badge>
+                  <Badge 
+                    className={`text-xs ${
+                      dealStatus === 'Aberto' ? 'bg-green-100 text-green-800' :
+                      dealStatus === 'Ganho' ? 'bg-blue-100 text-blue-800' :
+                      'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {dealStatus}
+                  </Badge>
                 </div>
                 
                 {/* Action Buttons */}
@@ -430,7 +493,7 @@ const AttendanceCenter = () => {
                   </div>
                   <div>
                     <p className="text-gray-600">Etapa</p>
-                    <p>Leads B2C</p>
+                    <p>{dealStage}</p>
                   </div>
                   <div>
                     <p className="text-gray-600">Valor</p>
