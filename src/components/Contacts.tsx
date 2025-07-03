@@ -20,7 +20,9 @@ import {
   Eye,
   Edit,
   Trash2,
-  ArrowUpDown
+  ArrowUpDown,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -36,6 +38,7 @@ const Contacts = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTagTab, setActiveTagTab] = useState("include");
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   // Mock data
   const contacts = [
@@ -95,11 +98,12 @@ const Contacts = () => {
         </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* Main Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="flex-1 relative">
+          <div className="flex flex-col space-y-4">
+            {/* Search Bar */}
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input 
                 placeholder="Buscar contatos..." 
@@ -108,20 +112,26 @@ const Contacts = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex space-x-2">
+
+            {/* Filter Row */}
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
               <Select>
-                <SelectTrigger className="w-[140px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="Campos" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="nome">Nome</SelectItem>
                   <SelectItem value="cpf">CPF</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="telefone">Telefone</SelectItem>
                   <SelectItem value="empresa">Empresa</SelectItem>
                   <SelectItem value="cargo">Cargo</SelectItem>
+                  <SelectItem value="segmento">Segmento</SelectItem>
                 </SelectContent>
               </Select>
+
               <Select>
-                <SelectTrigger className="w-[140px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="Tags" />
                 </SelectTrigger>
                 <SelectContent>
@@ -132,11 +142,166 @@ const Contacts = () => {
                   <SelectItem value="sem-tag">Sem tag</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Mais filtros
+
+              <Select>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Motivo de Perda" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nao-informar">Não informar</SelectItem>
+                  <SelectItem value="duplicado-whatsapp">Duplicado por WhatsApp</SelectItem>
+                  <SelectItem value="proximo-semestre">Próximo semestre</SelectItem>
+                  <SelectItem value="interacao-instagram">Interação Instagram</SelectItem>
+                  <SelectItem value="nao-atua-empresa">Não atua mais na empresa</SelectItem>
+                  <SelectItem value="rh-exterior">RH no Exterior</SelectItem>
+                  <SelectItem value="fora-perfil">Fora do perfil</SelectItem>
+                  <SelectItem value="desconhece-cadastro">Desconhece o cadastro</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button 
+                variant="outline" 
+                onClick={() => setShowMoreFilters(!showMoreFilters)}
+                className="flex items-center space-x-2"
+              >
+                <Filter className="h-4 w-4" />
+                <span>Mais filtros</span>
+                {showMoreFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
             </div>
+
+            {/* More Filters Section */}
+            {showMoreFilters && (
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-gray-700 mb-4">Filtros Avançados</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="filtro-data">Data de criação</Label>
+                    <Input type="date" id="filtro-data" />
+                  </div>
+
+                  <div>
+                    <Label>Com negócio em origens</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar origem" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="leads-b2c">Leads B2C</SelectItem>
+                        <SelectItem value="remarketing">Remarketing</SelectItem>
+                        <SelectItem value="recuperacao">Recuperação</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Com negócio em etapa</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar etapa" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="base">Base</SelectItem>
+                        <SelectItem value="meio">Meio</SelectItem>
+                        <SelectItem value="fechamento">Fechamento</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Com negócio em status</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ativo">Ativo</SelectItem>
+                        <SelectItem value="perdido">Perdido</SelectItem>
+                        <SelectItem value="ganho">Ganho</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Com/Sem dono do negócio</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="com">Com dono</SelectItem>
+                        <SelectItem value="sem">Sem dono</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Com/Sem negócio</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="com">Com negócio</SelectItem>
+                        <SelectItem value="sem">Sem negócio</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Com/Sem telefone</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="com">Com telefone</SelectItem>
+                        <SelectItem value="sem">Sem telefone</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Campanhas de SMS</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar campanha" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="campanha-1">Campanha SMS 1</SelectItem>
+                        <SelectItem value="campanha-2">Campanha SMS 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Campanhas de Voz</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar campanha" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="campanha-voz-1">Campanha Voz 1</SelectItem>
+                        <SelectItem value="campanha-voz-2">Campanha Voz 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Campanhas de SMS Flash</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecionar campanha" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="campanha-flash-1">Campanha Flash 1</SelectItem>
+                        <SelectItem value="campanha-flash-2">Campanha Flash 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -276,7 +441,6 @@ const Contacts = () => {
         </div>
       )}
 
-      {/* Create Deal Modal */}
       <Dialog open={showCreateDealModal} onOpenChange={setShowCreateDealModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -341,7 +505,6 @@ const Contacts = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Tag Modal */}
       <Dialog open={showTagModal} onOpenChange={setShowTagModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -381,7 +544,6 @@ const Contacts = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Export Modal */}
       <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
