@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Plus,
   Search,
@@ -21,7 +22,9 @@ import {
   X,
   Target,
   Archive,
-  Trash
+  Trash,
+  Edit,
+  BarChart3
 } from "lucide-react";
 import {
   Dialog,
@@ -50,6 +53,11 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import {
   DragDropContext,
   Droppable,
   Draggable,
@@ -77,6 +85,18 @@ const Index = () => {
   
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [isClientPanelOpen, setIsClientPanelOpen] = useState(false);
+
+  const [isCreateIntegrationModalOpen, setIsCreateIntegrationModalOpen] = useState(false);
+  const [isEditIntegrationModalOpen, setIsEditIntegrationModalOpen] = useState(false);
+  const [integrationStep, setIntegrationStep] = useState(0);
+  const [integrationData, setIntegrationData] = useState({
+    tipo_webhook: "",
+    nome_integracao: "",
+    url_webhook: "",
+    aplicativo: "",
+    mapeamento_campos: {} as Record<string, string>
+  });
+  const [editingIntegration, setEditingIntegration] = useState<any>(null);
 
   const origins = [
     { label: "Customer Care - Alumni by Better", id: "cc_alumni", color: "#FFBABA" },
@@ -203,6 +223,27 @@ const Index = () => {
     { key: "mais", label: "Mais filtros", active: activeFilters.mais }
   ];
 
+  const integracoes = [
+    {
+      id: "1",
+      nome: "Leads Elementor",
+      aplicativo: "Elementor",
+      tipo: "receber",
+      ativo: true,
+      url: "https://webhook.site/xyz",
+      mapeamento: { nome: "Nome", email: "Email" }
+    },
+    {
+      id: "2", 
+      nome: "Notificações Zapier",
+      aplicativo: "Zapier",
+      tipo: "enviar",
+      ativo: false,
+      url: "https://hooks.zapier.com/hooks/catch/xyz",
+      mapeamento: { lead: "Nome", contact: "Email" }
+    }
+  ];
+
   const onDragEnd = (result: DropResult) => {
     console.log("Drag ended:", result);
   };
@@ -249,6 +290,46 @@ const Index = () => {
       deal.nome_cliente.toLowerCase().includes(kanbanSearchQuery.toLowerCase())
     )
   }));
+
+  const handleCreateIntegration = () => {
+    console.log("Creating integration:", integrationData);
+    setIsCreateIntegrationModalOpen(false);
+    setIntegrationStep(0);
+    setIntegrationData({
+      tipo_webhook: "",
+      nome_integracao: "",
+      url_webhook: "",
+      aplicativo: "",
+      mapeamento_campos: {}
+    });
+  };
+
+  const handleEditIntegration = (integration: any) => {
+    setEditingIntegration(integration);
+    setIsEditIntegrationModalOpen(true);
+  };
+
+  const handleSaveEditedIntegration = () => {
+    console.log("Saving edited integration:", editingIntegration);
+    setIsEditIntegrationModalOpen(false);
+    setEditingIntegration(null);
+  };
+
+  const handleToggleIntegration = (integrationId: string, currentStatus: boolean) => {
+    console.log(`Toggling integration ${integrationId} to ${!currentStatus}`);
+  };
+
+  const nextStep = () => {
+    if (integrationStep < 3) {
+      setIntegrationStep(integrationStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (integrationStep > 0) {
+      setIntegrationStep(integrationStep - 1);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -590,10 +671,11 @@ const Index = () => {
           </DialogHeader>
           
           <Tabs defaultValue="geral" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="geral">Geral</TabsTrigger>
               <TabsTrigger value="etapas">Etapas e atividades</TabsTrigger>
               <TabsTrigger value="integracoes">Integrações</TabsTrigger>
+              <TabsTrigger value="historico">Histórico de movimentações</TabsTrigger>
             </TabsList>
             
             <TabsContent value="geral" className="space-y-4">
@@ -642,14 +724,109 @@ const Index = () => {
             <TabsContent value="integracoes" className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Integrações adicionadas</h3>
-                <Button onClick={() => setIsIntegrationModalOpen(true)}>
+                <Button onClick={() => setIsCreateIntegrationModalOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Nova integração
+                  Nova Integração
                 </Button>
               </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-gray-600 text-center">Nenhuma integração configurada</p>
+              
+              <div className="space-y-3">
+                {integracoes.length === 0 ? (
+                  <div className="border rounded-lg p-8 text-center">
+                    <p className="text-gray-600">Nenhuma integração configurada</p>
+                  </div>
+                ) : (
+                  integracoes.map((integracao) => (
+                    <Card key={integracao.id} className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div>
+                            <h4 className="font-medium">{integracao.nome}</h4>
+                            <p className="text-sm text-gray-600">{integracao.aplicativo}</p>
+                          </div>
+                          <Badge variant={integracao.tipo === 'receber' ? 'default' : 'secondary'}>
+                            {integracao.tipo === 'receber' ? 'Receber' : 'Enviar'}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <Label htmlFor={`toggle-${integracao.id}`} className="text-sm">
+                              Ativo
+                            </Label>
+                            <Switch
+                              id={`toggle-${integracao.id}`}
+                              checked={integracao.ativo}
+                              onCheckedChange={(checked) => handleToggleIntegration(integracao.id, integracao.ativo)}
+                            />
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditIntegration(integracao)}
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Editar
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))
+                )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="historico" className="space-y-4">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="flex items-center space-x-2">
+                  <Label>Filtrar por período:</Label>
+                  <Input type="date" className="w-auto" />
+                  <span>até</span>
+                  <Input type="date" className="w-auto" />
+                </div>
+                <Select defaultValue="">
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Tipo de log" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="MUDANCA_ETAPA">Mudança de etapa</SelectItem>
+                    <SelectItem value="ATIVIDADE_CRIADA">Atividade criada</SelectItem>
+                    <SelectItem value="ATIVIDADE_CONCLUIDA">Atividade concluída</SelectItem>
+                    <SelectItem value="ATIVIDADE_EXCLUIDA">Atividade excluída</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Ver em Dashboard
+                </Button>
+              </div>
+
+              <Card>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="border-b">
+                        <tr>
+                          <th className="text-left p-4">Data</th>
+                          <th className="text-left p-4">Usuário</th>
+                          <th className="text-left p-4">E-mail</th>
+                          <th className="text-left p-4">De</th>
+                          <th className="text-left p-4">Para</th>
+                          <th className="text-left p-4">Motivo</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colSpan={6} className="text-center p-8 text-gray-600">
+                            Nenhuma movimentação registrada ainda.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
 
@@ -659,6 +836,239 @@ const Index = () => {
             </Button>
             <Button className="bg-purple-600 hover:bg-purple-700">
               Salvar configurações
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Integration Modal */}
+      <Dialog open={isCreateIntegrationModalOpen} onOpenChange={setIsCreateIntegrationModalOpen}>
+        <DialogContent className="bg-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Criar integração - Etapa {integrationStep + 1} de 4</DialogTitle>
+          </DialogHeader>
+          
+          {integrationStep === 0 && (
+            <div className="space-y-4">
+              <h3 className="font-medium">O que você deseja fazer com essa integração?</h3>
+              <RadioGroup 
+                value={integrationData.tipo_webhook} 
+                onValueChange={(value) => setIntegrationData(prev => ({ ...prev, tipo_webhook: value }))}
+              >
+                <div className="flex items-center space-x-2 p-4 border rounded-lg">
+                  <RadioGroupItem value="receber" id="receber" />
+                  <div className="flex-1">
+                    <Label htmlFor="receber" className="font-medium">Receber Webhook</Label>
+                    <p className="text-sm text-gray-600">
+                      Cria ou atualiza negócios/contatos quando uma ferramenta enviar um webhook.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 p-4 border rounded-lg">
+                  <RadioGroupItem value="enviar" id="enviar" />
+                  <div className="flex-1">
+                    <Label htmlFor="enviar" className="font-medium">Enviar Webhook</Label>
+                    <p className="text-sm text-gray-600">
+                      Envia um webhook quando uma ação acontecer na Clint/Lovable.
+                    </p>
+                  </div>
+                </div>
+              </RadioGroup>
+            </div>
+          )}
+
+          {integrationStep === 1 && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="nome_integracao">Nome da integração</Label>
+                <Input
+                  id="nome_integracao"
+                  placeholder="Ex: Leads de campanha XYZ"
+                  value={integrationData.nome_integracao}
+                  onChange={(e) => setIntegrationData(prev => ({ ...prev, nome_integracao: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="url_webhook">URL do Webhook</Label>
+                <Input
+                  id="url_webhook"
+                  placeholder="https://..."
+                  value={integrationData.url_webhook}
+                  onChange={(e) => setIntegrationData(prev => ({ ...prev, url_webhook: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="aplicativo">Aplicativo de origem</Label>
+                <Select 
+                  value={integrationData.aplicativo} 
+                  onValueChange={(value) => setIntegrationData(prev => ({ ...prev, aplicativo: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o aplicativo" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="Elementor">Elementor</SelectItem>
+                    <SelectItem value="Hubspot">Hubspot</SelectItem>
+                    <SelectItem value="Zapier">Zapier</SelectItem>
+                    <SelectItem value="Make">Make</SelectItem>
+                    <SelectItem value="RD Station">RD Station</SelectItem>
+                    <SelectItem value="Outros">Outros</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          {integrationStep === 2 && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium">Mapeamento de campos</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Associe os campos do seu sistema externo aos campos da Lovable
+                </p>
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Label className="font-medium">Campo externo</Label>
+                    <Label className="font-medium">Campo da Lovable</Label>
+                  </div>
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="grid grid-cols-2 gap-4">
+                      <Input placeholder="Ex: first_name" />
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="Nome">Nome</SelectItem>
+                          <SelectItem value="Email">Email</SelectItem>
+                          <SelectItem value="Telefone">Telefone</SelectItem>
+                          <SelectItem value="CPF">CPF</SelectItem>
+                          <SelectItem value="Origem">Origem</SelectItem>
+                          <SelectItem value="Campanha">Campanha</SelectItem>
+                          <SelectItem value="Etapa inicial">Etapa inicial</SelectItem>
+                          <SelectItem value="Tag">Tag</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {integrationStep === 3 && (
+            <div className="space-y-4">
+              <p>
+                Clique em salvar para ativar sua integração. Ela estará listada na aba Integrações desta origem.
+              </p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <div className="flex justify-between w-full">
+              <Button 
+                variant="outline" 
+                onClick={prevStep}
+                disabled={integrationStep === 0}
+              >
+                Voltar
+              </Button>
+              <div className="space-x-2">
+                <Button variant="outline" onClick={() => setIsCreateIntegrationModalOpen(false)}>
+                  Cancelar
+                </Button>
+                {integrationStep < 3 ? (
+                  <Button onClick={nextStep} disabled={
+                    (integrationStep === 0 && !integrationData.tipo_webhook) ||
+                    (integrationStep === 1 && (!integrationData.nome_integracao || !integrationData.url_webhook || !integrationData.aplicativo))
+                  }>
+                    Próximo
+                  </Button>
+                ) : (
+                  <Button 
+                    className="bg-purple-600 hover:bg-purple-700"
+                    onClick={handleCreateIntegration}
+                  >
+                    Salvar integração
+                  </Button>
+                )}
+              </div>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Integration Modal */}
+      <Dialog open={isEditIntegrationModalOpen} onOpenChange={setIsEditIntegrationModalOpen}>
+        <DialogContent className="bg-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Editar integração</DialogTitle>
+          </DialogHeader>
+          
+          {editingIntegration && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit_nome">Nome da integração</Label>
+                <Input
+                  id="edit_nome"
+                  value={editingIntegration.nome}
+                  onChange={(e) => setEditingIntegration(prev => ({ ...prev, nome: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_url">URL do Webhook</Label>
+                <Input
+                  id="edit_url"
+                  value={editingIntegration.url}
+                  onChange={(e) => setEditingIntegration(prev => ({ ...prev, url: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit_aplicativo">Aplicativo</Label>
+                <Select 
+                  value={editingIntegration.aplicativo} 
+                  onValueChange={(value) => setEditingIntegration(prev => ({ ...prev, aplicativo: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="Elementor">Elementor</SelectItem>
+                    <SelectItem value="Zapier">Zapier</SelectItem>
+                    <SelectItem value="Make">Make</SelectItem>
+                    <SelectItem value="Hubspot">Hubspot</SelectItem>
+                    <SelectItem value="RD Station">RD Station</SelectItem>
+                    <SelectItem value="Outro">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Mapeamento de campos</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Label className="font-medium text-sm">Campo externo</Label>
+                    <Label className="font-medium text-sm">Campo da Lovable</Label>
+                  </div>
+                  {Object.entries(editingIntegration.mapeamento || {}).map(([key, value], index) => (
+                    <div key={index} className="grid grid-cols-2 gap-4">
+                      <Input value={key} readOnly className="bg-gray-50" />
+                      <Input value={value as string} readOnly className="bg-gray-50" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditIntegrationModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={handleSaveEditedIntegration}
+            >
+              Salvar alterações
             </Button>
           </DialogFooter>
         </DialogContent>
