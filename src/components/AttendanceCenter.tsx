@@ -337,7 +337,7 @@ const AttendanceCenter = () => {
               <CardContent className="space-y-3">
                 <div className="text-sm">
                   <p className="text-gray-600">Funil</p>
-                  <p className="font-medium">B2C - Alumni by Better > Leads B2C</p>
+                  <p className="font-medium">B2C - Alumni by Better &gt; Leads B2C</p>
                 </div>
                 <div className="text-sm">
                   <p className="text-gray-600">Valor</p>
