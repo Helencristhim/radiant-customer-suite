@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Plus, Search, Bell, Settings as SettingsIcon } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/Dashboard";
 import LeadsTable from "@/components/LeadsTable";
+import Contacts from "@/components/Contacts";
 import AttendanceCenter from "@/components/AttendanceCenter";
 import Integrations from "@/components/Integrations";
 import SalesFlow from "@/components/SalesFlow";
@@ -25,6 +25,8 @@ const Index = () => {
         return <Dashboard />;
       case "leads":
         return <LeadsTable />;
+      case "contacts":
+        return <Contacts />;
       case "attendance":
         return <AttendanceCenter />;
       case "integrations":

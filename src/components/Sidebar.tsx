@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { 
   LayoutDashboard, 
@@ -12,7 +11,8 @@ import {
   UserCheck,
   GitBranch,
   Building,
-  Phone
+  Phone,
+  UserRound
 } from "lucide-react";
 
 interface SidebarProps {
@@ -26,6 +26,7 @@ const Sidebar = ({ activeTab, setActiveTab, collapsed, setCollapsed }: SidebarPr
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "leads", label: "Leads", icon: Users },
+    { id: "contacts", label: "Contatos", icon: UserRound },
     { id: "funnels", label: "Funis", icon: GitBranch },
     { id: "attendance", label: "Atendimento", icon: MessageSquare },
     { id: "campaigns", label: "Campanhas", icon: Megaphone },
