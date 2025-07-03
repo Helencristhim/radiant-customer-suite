@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,10 +19,7 @@ import {
   ChevronDown,
   Download,
   RotateCcw,
-  X,
-  Target,
-  Archive,
-  Trash
+  X
 } from "lucide-react";
 import {
   Dialog,
@@ -38,32 +36,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import ClientPanel from "@/components/ClientPanel";
 
-const Index = () => {
+const Negocios = () => {
   const [selectedOrigin, setSelectedOrigin] = useState("leads_b2c");
   const [searchQuery, setSearchQuery] = useState("");
-  const [kanbanSearchQuery, setKanbanSearchQuery] = useState("");
   const [isNewOriginModalOpen, setIsNewOriginModalOpen] = useState(false);
-  const [isConfigOriginModalOpen, setIsConfigOriginModalOpen] = useState(false);
-  const [isIntegrationModalOpen, setIsIntegrationModalOpen] = useState(false);
   const [newOriginName, setNewOriginName] = useState("");
   const [newOriginGroup, setNewOriginGroup] = useState("");
   const [activeFilters, setActiveFilters] = useState({
@@ -74,9 +56,6 @@ const Index = () => {
     status: false,
     mais: false
   });
-  
-  const [selectedClient, setSelectedClient] = useState<any>(null);
-  const [isClientPanelOpen, setIsClientPanelOpen] = useState(false);
 
   const origins = [
     { label: "Customer Care - Alumni by Better", id: "cc_alumni", color: "#FFBABA" },
@@ -221,37 +200,9 @@ const Index = () => {
     setNewOriginName("");
     setNewOriginGroup("");
   };
-  
-  const handleDealClick = (deal: any) => {
-    const clientData = {
-      id: deal.id,
-      nome: deal.nome_cliente,
-      email: deal.email,
-      telefone: "+55 11 99999-9999",
-      instagram: "@" + deal.nome_cliente.toLowerCase().replace(" ", ""),
-      empresa: "Empresa " + deal.nome_cliente,
-      cargo: "Gerente",
-      origem: "LEADS B2C",
-      valor: deal.valor,
-      status: "Aberto",
-      etapa_atual: stages.find(s => s.deals.includes(deal))?.name || "Base",
-      avatar: deal.avatar,
-      tags: deal.tags
-    };
-    
-    setSelectedClient(clientData);
-    setIsClientPanelOpen(true);
-  };
-
-  const filteredDeals = stages.map(stage => ({
-    ...stage,
-    deals: stage.deals.filter(deal =>
-      deal.nome_cliente.toLowerCase().includes(kanbanSearchQuery.toLowerCase())
-    )
-  }));
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-[calc(100vh-4rem)]">
       {/* Left Sidebar - Origins */}
       <div className="w-[280px] bg-white border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
@@ -269,52 +220,21 @@ const Index = () => {
 
         <div className="flex-1 p-2 space-y-1 overflow-y-auto">
           {origins.map((origin) => (
-            <div key={origin.id} className="flex items-center justify-between group">
-              <button
-                className={`flex-1 flex items-center space-x-3 px-3 py-2 text-left text-sm rounded-md transition-colors ${
-                  selectedOrigin === origin.id
-                    ? "bg-blue-100 text-blue-900"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-                onClick={() => setSelectedOrigin(origin.id)}
-              >
-                <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: origin.color }}
-                />
-                <span className="truncate">{origin.label}</span>
-              </button>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white">
-                  <DropdownMenuItem onClick={() => setIsConfigOriginModalOpen(true)}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Configurações
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Target className="mr-2 h-4 w-4" />
-                    Selecionar origem
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Archive className="mr-2 h-4 w-4" />
-                    Arquivar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
-                    <Trash className="mr-2 h-4 w-4" />
-                    Excluir
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <button
+              key={origin.id}
+              className={`w-full flex items-center space-x-3 px-3 py-2 text-left text-sm rounded-md transition-colors ${
+                selectedOrigin === origin.id
+                  ? "bg-blue-100 text-blue-900"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+              onClick={() => setSelectedOrigin(origin.id)}
+            >
+              <div
+                className="w-3 h-3 rounded-full flex-shrink-0"
+                style={{ backgroundColor: origin.color }}
+              />
+              <span className="truncate">{origin.label}</span>
+            </button>
           ))}
           
           <button
@@ -332,7 +252,9 @@ const Index = () => {
         {/* Header */}
         <div className="p-6 border-b border-gray-200 bg-white">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-purple-900">Negócios</h1>
+            <h1 className="text-2xl font-bold text-purple-900">
+              {origins.find(o => o.id === selectedOrigin)?.label || "Negócios"}
+            </h1>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm">
                 <RotateCcw className="h-4 w-4 mr-2" />
@@ -342,7 +264,7 @@ const Index = () => {
                 <Download className="h-4 w-4 mr-2" />
                 Exportar
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setIsConfigOriginModalOpen(true)}>
+              <Button variant="outline" size="sm">
                 <Settings className="h-4 w-4 mr-2" />
                 Configuração
               </Button>
@@ -353,15 +275,13 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Search and Filters */}
-          <div className="flex items-center space-x-4 flex-wrap mb-4">
+          {/* Filters */}
+          <div className="flex items-center space-x-4 flex-wrap">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Buscar por nome do cliente"
+                placeholder="Buscar por..."
                 className="pl-10 w-64"
-                value={kanbanSearchQuery}
-                onChange={(e) => setKanbanSearchQuery(e.target.value)}
               />
             </div>
 
@@ -386,7 +306,7 @@ const Index = () => {
 
           {/* Active Filters Display */}
           {Object.values(activeFilters).some(Boolean) && (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 mt-3">
               <span className="text-sm text-gray-600">Filtros ativos:</span>
               {Object.entries(activeFilters).map(([key, active]) =>
                 active && (
@@ -412,7 +332,7 @@ const Index = () => {
           <div className="bg-white rounded-lg shadow-sm">
             <DragDropContext onDragEnd={onDragEnd}>
               <div className="grid grid-cols-5 gap-0 min-h-[600px]">
-                {filteredDeals.map((stage) => (
+                {stages.map((stage) => (
                   <div key={stage.id} className={`${stage.color} border-r border-gray-200 last:border-r-0`}>
                     {/* Stage Header */}
                     <div className="p-4 border-b border-gray-200 bg-white">
@@ -445,8 +365,7 @@ const Index = () => {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className="bg-white rounded-lg border border-gray-200 p-3 cursor-pointer hover:shadow-md transition-shadow"
-                                  onClick={() => handleDealClick(deal)}
+                                  className="bg-white rounded-lg border border-gray-200 p-3 cursor-move hover:shadow-md transition-shadow"
                                 >
                                   {/* Deal Header */}
                                   <div className="flex items-start justify-between mb-2">
@@ -581,135 +500,8 @@ const Index = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Configuration Modal */}
-      <Dialog open={isConfigOriginModalOpen} onOpenChange={setIsConfigOriginModalOpen}>
-        <DialogContent className="bg-white max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Configurar origem</DialogTitle>
-          </DialogHeader>
-          
-          <Tabs defaultValue="geral" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="geral">Geral</TabsTrigger>
-              <TabsTrigger value="etapas">Etapas e atividades</TabsTrigger>
-              <TabsTrigger value="integracoes">Integrações</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="geral" className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                  <Input defaultValue="LEADS B2C" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Grupo</label>
-                  <Select defaultValue="b2c">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="b2c">B2C - Alumni by Better</SelectItem>
-                      <SelectItem value="b2b">B2B - Alumni by Better</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Visualização de negócios</label>
-                  <Select defaultValue="todos">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="todos">Usuários veem todos</SelectItem>
-                      <SelectItem value="seus">Apenas os seus</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Moeda</label>
-                  <Input placeholder="BRL, USD, EUR..." defaultValue="BRL" />
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="etapas">
-              <div className="p-4 border rounded-lg">
-                <p className="text-gray-600">Configuração de etapas e atividades será implementada aqui.</p>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="integracoes" className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Integrações adicionadas</h3>
-                <Button onClick={() => setIsIntegrationModalOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nova integração
-                </Button>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-gray-600 text-center">Nenhuma integração configurada</p>
-              </div>
-            </TabsContent>
-          </Tabs>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsConfigOriginModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              Salvar configurações
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Integration Modal */}
-      <Dialog open={isIntegrationModalOpen} onOpenChange={setIsIntegrationModalOpen}>
-        <DialogContent className="bg-white">
-          <DialogHeader>
-            <DialogTitle>Nova integração</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-medium mb-2">O que você deseja fazer com essa integração?</h3>
-              <div className="grid grid-cols-1 gap-3">
-                <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
-                  <CardContent className="p-4">
-                    <h4 className="font-medium">Receber Webhook</h4>
-                    <p className="text-sm text-gray-600">Cria ou atualiza negócios/contatos quando uma ferramenta enviar um webhook.</p>
-                  </CardContent>
-                </Card>
-                <Card className="cursor-pointer hover:bg-gray-50 transition-colors">
-                  <CardContent className="p-4">
-                    <h4 className="font-medium">Enviar Webhook</h4>
-                    <p className="text-sm text-gray-600">Envia um webhook quando uma ação acontecer.</p>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsIntegrationModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              Começar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Client Panel */}
-      <ClientPanel
-        cliente={selectedClient}
-        isOpen={isClientPanelOpen}
-        onClose={() => setIsClientPanelOpen(false)}
-      />
     </div>
   );
 };
 
-export default Index;
+export default Negocios;
